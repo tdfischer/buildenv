@@ -62,7 +62,8 @@ function _buildenv_load() {
     return
   fi
   BUILDENV_PATH=${BUILDENV_PREFIX}/$_envname
-  export BUILDENV_PATH_${_envname}="$BUILDENV_PATH"
+  _pathvar="BUILDENV_PATH_"$(echo $_envname | sed -e s/-/_/)
+  export $_pathvar="$BUILDENV_PATH"
   export BUILDENV_LOADED=" $_envname$BUILDENV_LOADED"
   _buildenv_hook init $_envname
   _buildenv_set PKG_CONFIG_PATH "$BUILDENV_PATH/lib/pkgconfig/:$PKG_CONFIG_PATH"
