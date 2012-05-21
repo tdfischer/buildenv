@@ -58,16 +58,19 @@ function _buildenv_load() {
     return
   fi
   local _envname=$1
-  if [[ "$BUILDENV_LOADED" != "${BUILDENV_LOADED/$_envname /}" ]];then
+  if [[ "$BUILDENV_LOADED" != "${BUILDENV_LOADED/ $_envname /}" ]];then
     return
   fi
   BUILDENV_PATH=${BUILDENV_PREFIX}/$_envname
   export BUILDENV_PATH_${_envname}="$BUILDENV_PATH"
-  export BUILDENV_LOADED="$_envname $BUILDENV_LOADED"
+  export BUILDENV_LOADED=" $_envname$BUILDENV_LOADED"
+  _buildenv_hook init $_envname
   _buildenv_set PKG_CONFIG_PATH "$BUILDENV_PATH/lib/pkgconfig/:$PKG_CONFIG_PATH"
   _buildenv_set PATH "$BUILDENV_PATH/bin:$PATH"
   _buildenv_set LD_LIBRARY_PREFIX "$BUILDENV_PATH/lib/:$LD_LIBRARY_PREFIX"
-  _buildenv_hook init $_envname
+  _buildenv_set CMAKE_INCLUDE_PATH "$BUILDENV_PATH/include/:$CMAKE_INCLUDE_PATH"
+  _buildenv_set CMAKE_LIBRARY_PATH "$BUILDENV_PATH/lib/:$CMAKE_LIBRARY_PATH"
+  _buildenv_set CMAKE_PREFIX_PATH "$BUILDENV_PATH:$CMAKE_PREFIX_PATH"
   export BUILDENV_PATH
   echo "Loaded $_envname environment."
 }
@@ -78,13 +81,13 @@ function _buildenv_unload() {
     return
   fi
   _buildenv_hook teardown $1
-  BUILDENV_LOADED=${BUILDENV_LOADED/$1 /}
+  BUILDENV_LOADED=${BUILDENV_LOADED/ $1 / }
 }
 
 function _buildenv_autodetect() {
   local _tmp=$(git config --local --get remote.origin.url)
   if [ -n "_tmp" ];then
-    echo $(basename "$_tmp" .git)
+    echo $(basename "${_tmp#*:}" .git)
     return 0
   fi
   basename `pwd`
