@@ -1,0 +1,8 @@
+source $BUILDENV_HOME/setup.sh
+_buildenv_restore CONFIG_SITE
+if [ -f "$CONFIG_SITE" ];then
+  source "$CONFIG_SITE"
+fi
+pathvar="BUILDENV_PATH_${BUILDENV_MASTER}"
+test "$prefix" =  NONE && prefix=${!pathvar}
+_buildenv_hook config.site
