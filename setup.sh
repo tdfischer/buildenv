@@ -11,6 +11,13 @@
 export BUILDENV_HOME=${BUILDENV_HOME:-`dirname $BASH_SOURCE`}
 export BUILDENV_PREFIX=${BUILDENV_PREFIX:-/opt/buildenv}
 export BUILDENV_LOADED=""
+export BUILDENV_DEBUG=""
+
+function _buildenv_debug() {
+  if [ -n "$BUILDENV_DEBUG" ];then
+    echo "D: $@"
+  fi
+}
 
 function _buildenv_set() {
   local _varname=$1
@@ -39,19 +46,32 @@ function _buildenv_restore() {
 } 
 
 function _buildenv_restore_all() {
+  _buildenv_hook restore-all
   for v in $_buildenv_saved_vars;do
     _buildenv_restore $v
   done
 }
 
+# Runs a buildenv hook.
+# Usage:
+# _buildenv_hook hookname
+# OR:
+# _buildenv_hook hookname environment
+# First case runs the hook for all loaded environments.
+# Second case runs the hook for only the specified environment.
+
 function _buildenv_hook() {
-  HOOK=$1
-  for _envname in $BUILDENV_LOADED;do
-    SCRIPT="$BUILDENV_HOME/$HOOK-env.d/$_envname.sh"
-    if [ -f "$SCRIPT" ];then
-      source "$SCRIPT"
+  local _hook=$1
+  shift
+  local _envlist=${1:-$BUILDENV_LOADED}
+  for _envname in $_envlist;do
+    _buildenv_debug "Running $_hook for $_envname"
+    local _script="$BUILDENV_HOME/$_hook-env.d/$_envname.sh"
+    if [ -f "$_script" ];then
+      source "$_script"
     fi
   done
+  _buildenv_debug "Ran $_hook"
 }
 
 function _buildenv_is_loaded() {
@@ -136,6 +156,8 @@ function buildenv() {
     fi
     _buildenv_load $_envname
   done
+  _buildenv_save CONFIG_SITE
+  export CONFIG_SITE="${BUILDENV_HOME}/config.site"
   export PROMPT_COMMAND='echo -en "\e[1;32m${BUILDENV_MASTER})\e[0m"'
   echo -e "Loaded environments: \E[1;33m$BUILDENV_LOADED\E[0m"
   echo -e "Master environment: \E[1;32m$BUILDENV_MASTER\E[0m"
