@@ -3,6 +3,7 @@ _buildenv_restore CONFIG_SITE
 if [ -f "$CONFIG_SITE" ];then
   source "$CONFIG_SITE"
 fi
-pathvar="BUILDENV_PATH_${BUILDENV_MASTER}"
-test "$prefix" =  NONE && prefix=${!pathvar}
+test "$prefix" =  NONE && prefix=$(_buildenv_pkg_get PATH $BUILDENV_MASTER)
+test "$PKG_CONFIG" = NONE && PKG_CONFIG="pkg-config"
+PKG_CONFIG="_buildenv_pkg_config $PKG_CONFIG"
 _buildenv_hook config.site
