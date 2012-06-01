@@ -8,6 +8,7 @@
 #   BUILDENV_HOME - The place to look for your *-env.d/ files. Defaults to `dirname /path/to/setup.sh`
 #   BUILDENV_PREFIX - Where you will install your sources. Defaults to /opt/buildenv/
 
+export BUILDENV_VERSION="0.1.0"
 export BUILDENV_HOME=${BUILDENV_HOME:-`dirname $BASH_SOURCE`}
 export BUILDENV_PREFIX=${BUILDENV_PREFIX:-/opt/buildenv}
 export BUILDENV_LOADED=""
@@ -361,3 +362,4 @@ function buildenv() {
 
 export PROMPT_COMMAND="_buildenv_build_prompt;$PROMPT_COMMAND"
 _buildenv_load_defaults
+_buildenv_debug "Buildenv $BUILDENV_VERSION loaded."
