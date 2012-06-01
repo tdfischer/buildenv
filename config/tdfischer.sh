@@ -1,0 +1,2 @@
+buildenv_load_extension git
+buildenv_load_extension prompt
