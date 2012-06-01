@@ -11,7 +11,7 @@
 export BUILDENV_HOME=${BUILDENV_HOME:-`dirname $BASH_SOURCE`}
 export BUILDENV_PREFIX=${BUILDENV_PREFIX:-/opt/buildenv}
 export BUILDENV_LOADED=""
-export BUILDENV_DEBUG=""
+export BUILDENV_EXTENSIONS=""
 
 function _buildenv_debug() {
   if [ -n "$BUILDENV_DEBUG" ];then
@@ -88,15 +88,37 @@ function _buildenv_restore_all() {
 function _buildenv_hook() {
   local _hook=$1
   shift
-  local _envlist=${1:-$BUILDENV_LOADED}
-  for _envname in $_envlist;do
+  for _envname in $BUILDENV_LOADED;do
     _buildenv_debug "Running $_hook for $_envname"
-    local _script="$BUILDENV_HOME/$_hook-env.d/$_envname.sh"
-    if [ -f "$_script" ];then
-      source "$_script"
-    fi
+    _buildenv_env_hook $_hook $_envname
+  done
+  for _modname in $BUILDENV_EXTENSIONS;do
+    _buildenv_debug "Running $_hook for $_modname extension"
+    _buildenv_ext_hook $_hook $_modname
   done
   _buildenv_debug "Ran $_hook"
+}
+
+function _buildenv_run_hook() {
+  local _hook=$1
+  local _modname=$2
+  local _script="$BUILDENV_HOME/$_hook.d/$_modname.sh"
+  _buildenv_debug $_script
+  if [ -f "$_script" ];then
+    source "$_script"
+  fi
+}
+
+function _buildenv_env_hook() {
+  local _hook=$1
+  local _envname=$2
+  _buildenv_run_hook "$_hook-env" $_envname
+}
+
+function _buildenv_ext_hook() {
+  local _hook=$1
+  local _modname=$2
+  _buildenv_run_hook "$_hook-ext" $_modname
 }
 
 function _buildenv_is_loaded() {
@@ -122,7 +144,7 @@ function _buildenv_load() {
   local BUILDENV_PATH=${BUILDENV_PREFIX}/$_envname
   _buildenv_pkg_set PATH $_envname "$BUILDENV_PATH"
   export BUILDENV_LOADED=" $_envname$BUILDENV_LOADED"
-  _buildenv_hook init $_envname
+  _buildenv_env_hook init $_envname
   _buildenv_set PKG_CONFIG_PATH "$BUILDENV_PATH/lib/pkgconfig/:$PKG_CONFIG_PATH"
   _buildenv_set PATH "$BUILDENV_PATH/bin:$PATH"
   _buildenv_set LD_LIBRARY_PREFIX "$BUILDENV_PATH/lib/:$LD_LIBRARY_PREFIX"
@@ -138,7 +160,7 @@ function _buildenv_unload() {
     echo "Usage: _buildenv_unload package-name"
     return
   fi
-  _buildenv_hook teardown $1
+  _buildenv_env_hook teardown $1
   BUILDENV_LOADED=${BUILDENV_LOADED/ $1 / }
 }
 
@@ -171,7 +193,27 @@ function _buildenv_complete() {
   return 0
 }
 
+function _buildenv_ext_complete() { 
+  local cur prev environs
+  COMPREPLY=()
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  prev="${COMP_WORDS[COMP_CWORD-1]}"
+  for e in $(ls $BUILDENV_HOME/*-ext.d/*);do
+    e=`basename $e .sh`
+    environs="$environs $e"
+  done
+  for e in $(find $BUILDENV_PREFIX -maxdepth 1 -mindepth 1 -type d);do
+    e=`basename $e`
+    environs="$environs $e"
+  done
+
+  COMPREPLY=( $(compgen -W "${environs}" -- ${cur}) )
+  return 0
+}
+
 complete -F _buildenv_complete buildenv
+
+complete -F _buildenv_ext_complete buildenv_load_extension
 
 function _buildenv_auto_add_dep() {
   _buildenv_debug "Autoloading dep: $@"
@@ -252,6 +294,49 @@ function buildenv_add_dependency() {
   echo "Added dependency to $_env"
 }
 
+function _buildenv_prompt_append() {
+  export BUILDENV_PROMPT="${BUILDENV_PROMPT}${@}"
+}
+
+function _buildenv_build_prompt() {
+  export BUILDENV_PROMPT=""
+  if [ -n "$BUILDENV_BIG_PROMPT" ];then
+    _buildenv_prompt_append "$BUILDENV_MASTER"
+    _buildenv_hook prompt
+    if [ -n "$BUILDENV_PROMPT" ];then
+      echo "$BUILDENV_PROMPT"
+    fi
+  fi
+}
+
+function buildenv_load_extension() {
+  export BUILDENV_EXTENSIONS=" ${1}${BUILDENV_EXTENSIONS}"
+  _buildenv_ext_hook init $1
+}
+
+function _buildenv_load_defaults() {
+  local _parent=$(readlink /proc/$PPID/exe)
+  _parent=${_parent##*/bin/}
+  _buildenv_load_config $_parent
+  _buildenv_load_config $TERM
+  _buildenv_load_config $DESKTOP_SESSION
+  local _host=$HOSTNAME
+  while [ "${_host}" != "${_host/./}" ];do
+    _buildenv_load_config $_host
+    _host=${_host#*.}
+  done
+}
+
+function _buildenv_load_config() {
+  local _config="$BUILDENV_HOME/config/$1.sh"
+  _buildenv_debug "Loading config from $_config"
+  if [ -f "$_config" ];then
+    source $_config
+    return 0
+  fi
+  return 1
+}
+
 function buildenv() {
   _buildenv_autodetect
   local _envs_to_load=${@:-$_buildenv_auto_name}
@@ -263,12 +348,16 @@ function buildenv() {
   for _envname in $_envs_to_load;do
     if [ -z "$BUILDENV_MASTER" ];then
       export BUILDENV_MASTER=$_envname
+      _buildenv_hook firstrun
     fi
     _buildenv_load $_envname
   done
   _buildenv_save CONFIG_SITE
   export CONFIG_SITE="${BUILDENV_HOME}/config.site"
-  export PROMPT_COMMAND='echo -en "\e[1;32m${BUILDENV_MASTER})\e[0m"'
   echo -e "Loaded environments: \E[1;33m$BUILDENV_LOADED\E[0m"
   echo -e "Master environment: \E[1;32m$BUILDENV_MASTER\E[0m"
+  _buildenv_hook loaded
 }
+
+export PROMPT_COMMAND="_buildenv_build_prompt;$PROMPT_COMMAND"
+_buildenv_load_defaults
