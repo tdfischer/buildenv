@@ -318,6 +318,7 @@ function buildenv_load_extension() {
 function _buildenv_load_defaults() {
   local _parent=$(readlink /proc/$PPID/exe)
   _parent=${_parent##*/bin/}
+  _buildenv_load_config $USER
   _buildenv_load_config $_parent
   _buildenv_load_config $TERM
   _buildenv_load_config $DESKTOP_SESSION
@@ -331,6 +332,12 @@ function _buildenv_load_defaults() {
 function _buildenv_load_config() {
   local _config="$BUILDENV_HOME/config/$1.sh"
   _buildenv_debug "Loading config from $_config"
+  if [ -f "$_config" ];then
+    source $_config
+    return 0
+  fi
+  local _config="~/.local/share/buildenv/config/$1.sh"
+  _buildenv_debug "Loading user config from $_config"
   if [ -f "$_config" ];then
     source $_config
     return 0
