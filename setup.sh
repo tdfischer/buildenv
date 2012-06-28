@@ -11,6 +11,8 @@
 export BUILDENV_VERSION="0.1.0"
 export BUILDENV_HOME=${BUILDENV_HOME:-`dirname $BASH_SOURCE`}
 export BUILDENV_PREFIX=${BUILDENV_PREFIX:-/opt/buildenv}
+export BUILDENV_BUILD_ROOT=${BUILDENV_BUILD:-$HOME/build/}
+export BUILDENV_SRC_ROOT=${BUILDENV_SRC:-$HOME/Projects/}
 export BUILDENV_LOADED=""
 export BUILDENV_EXTENSIONS=""
 
@@ -308,6 +310,18 @@ function _buildenv_build_prompt() {
       echo "$BUILDENV_PROMPT"
     fi
   fi
+  _src=${PWD#$BUILDENV_SRC_ROOT}
+  _build=${PWD#$BUILDENV_BUILD_ROOT}
+  if [ "$PWD" != "$_src" ];then
+    _project="$_src"
+  elif [ "$PWD" != "$_build" ];then
+    _project="$_build"
+  fi
+  export BUILDENV_SOURCE="$BUILDENV_SRC_ROOT/$_project"
+  export BUILDENV_BUILD="$BUILDENV_BUILD_ROOT/$_project"
+  _buildenv_debug "CWD: $PWD"
+  _buildenv_debug "Current source: $BUILDENV_SOURCE $_src"
+  _buildenv_debug "Current build: $BUILDENV_BUILD $_build"
 }
 
 function buildenv_load_extension() {
@@ -365,6 +379,20 @@ function buildenv() {
   echo -e "Loaded environments: \E[1;33m$BUILDENV_LOADED\E[0m"
   echo -e "Master environment: \E[1;32m$BUILDENV_MASTER\E[0m"
   _buildenv_hook loaded
+}
+
+# Change to the source directory
+function cs() {
+  cd $BUILDENV_SOURCE
+}
+
+# Change to the build directory
+function cb() {
+  if [ ! -d "$BUILDENV_BUILD" ];then
+    echo "Creating new build directory in $BUILDENV_BUILD"
+    mkdir -p $BUILDENV_BUILD
+  fi
+  cd $BUILDENV_BUILD
 }
 
 export PROMPT_COMMAND="_buildenv_build_prompt;$PROMPT_COMMAND"
