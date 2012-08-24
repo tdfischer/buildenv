@@ -349,18 +349,23 @@ function _buildenv_load_defaults() {
 
 function _buildenv_load_config() {
   local _config="$BUILDENV_HOME/config/$1.sh"
+  local _ret=1
+  export BUILDENV_OLD_CONFIG=${BUILDENV_CONFIG}
+  export BUILDENV_CONFIG=$1
+  _buildenv_hook pre-load-config
   _buildenv_debug "Loading config from $_config"
   if [ -f "$_config" ];then
     source $_config
-    return 0
+    _ret=0
   fi
   local _config="~/.local/share/buildenv/config/$1.sh"
   _buildenv_debug "Loading user config from $_config"
   if [ -f "$_config" ];then
     source $_config
-    return 0
+    _ret=0
   fi
-  return 1
+  _buildenv_hook load-config
+  return $_ret
 }
 
 function buildenv() {
