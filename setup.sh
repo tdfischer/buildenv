@@ -18,12 +18,11 @@ export BUILDENV_SRC_ROOT=${BUILDENV_SRC:-$HOME/Projects/}
 export BUILDENV_LOADED=""
 export BUILDENV_EXTENSIONS=""
 
-source $BUILDENV_HOME/lib/buildenv/buildenv.sh
-source $BUILDENV_HOME/lib/buildenv/hooks.sh
-source $BUILDENV_HOME/lib/buildenv/vars.sh
-source $BUILDENV_HOME/lib/buildenv/prompt.sh
-source $BUILDENV_HOME/lib/buildenv/aliases.sh
-source $BUILDENV_HOME/lib/buildenv/update.sh
+source $BUILDENV_HOME/lib/load.sh
+_buildenv_lib_include buildenv/debug.sh
+_buildenv_lib_include buildenv/hooks.sh
+_buildenv_lib_include buildenv/buildenv.sh
+_buildenv_lib_include buildenv/prompt.sh
 
 function _buildenv_complete() { 
   local cur prev environs
@@ -138,7 +137,7 @@ function buildenv_report() {
   echo "Buildenv $BUILDENV_VERSION loaded."
   echo "Home: $BUILDENV_HOME"
   echo "Build root: $BUILDENV_BUILD_ROOT"
-  echo "Source root: $BUILDENV_SOURCE_ROOT"
+  echo "Source root: $BUILDENV_SRC_ROOT"
   echo "Current buildenv: $BUILDENV_MASTER"
   echo "Extensions: $BUILDENV_EXTENSIONS"
   _buildenv_hook report
