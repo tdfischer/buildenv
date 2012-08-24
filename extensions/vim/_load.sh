@@ -19,4 +19,4 @@ function _buildenv_vim_add_vimrc() {
 
 _buildenv_vim_add_vimrc ~/.vimrc
 
-_buildenv_set VIMINIT $(_buildenv_vim_viminit)
+_buildenv_set VIMINIT "$(_buildenv_vim_viminit)"
