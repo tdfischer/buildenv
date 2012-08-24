@@ -144,6 +144,7 @@ function buildenv_report() {
 }
 
 function buildenv_update() {
+  _buildenv_lib_include buildenv/update.sh
   _buildenv_update_check
   if [ $? -eq 0 ];then
     echo "Downloading update..."
