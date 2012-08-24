@@ -27,7 +27,7 @@ function _buildenv_apply_update() {
   (
     cd $BUILDENV_HOME
     git checkout master
-    git pull origin master
+    git pull --rebase origin master
     git submodule init
     git submodule update
   )
