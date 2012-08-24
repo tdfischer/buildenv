@@ -27,6 +27,10 @@ function _buildenv_debug() {
   fi
 }
 
+function _buildenv_error() {
+  echo "E: $@" 1>&2
+}
+
 function _buildenv_is_active() {
   if [ -z "$BUILDENV_MASTER" ];then
     echo "Must be run within a buildenv."
