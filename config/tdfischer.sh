@@ -3,3 +3,4 @@ export DEBFULLNAME="Trever Fischer"
 export EDITOR="vim"
 buildenv_load_extension git
 buildenv_load_extension prompt
+buildenv_load_extension vim
