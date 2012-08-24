@@ -31,6 +31,7 @@ function _buildenv_apply_update() {
   _buildenv_hook update-applied
   local _ret=$?
   if [ $_ret -eq 0 ];then
+    rm $BUILDENV_HOME/.update-available
     return 0
   fi
   return 1
