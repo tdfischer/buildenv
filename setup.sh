@@ -399,6 +399,17 @@ function cb() {
   cd $BUILDENV_BUILD
 }
 
+function build() {
+  cb
+  echo "Building in $BUILDENV_BUILD"
+  if [ -f "$BUILDENV_SOURCE/CMakeLists.txt" ];then
+    echo "Running cmake"
+    cmake -DCMAKE_INSTALL_PREFIX=$(_buildenv_pkg_get PATH $BUILDENV_MASTER) $BUILDENV_SOURCE
+  else
+    echo "Don't know how to handle this build system!"
+  fi
+}
+
 export PROMPT_COMMAND="_buildenv_build_prompt;$PROMPT_COMMAND"
 _buildenv_load_defaults
 _buildenv_debug "Buildenv $BUILDENV_VERSION loaded."
