@@ -24,10 +24,13 @@ function _buildenv_update_check() {
 }
 
 function _buildenv_apply_update() {
-  git --git-dir=$BUILDENV_HOME/.git/ checkout master
-  git --git-dir=$BUILDENV_HOME/.git/ rebase origin/master
-  git --git-dir=$BUILDENV_HOME/.git/ submodule init
-  git --git-dir=$BUILDENV_HOME/.git/ submodule update
+  (
+    cd $BUILDENV_HOME
+    git checkout master
+    git pull origin master
+    git submodule init
+    git submodule update
+  )
   _buildenv_hook update-applied
   local _ret=$?
   if [ $_ret -eq 0 ];then
