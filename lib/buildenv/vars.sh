@@ -20,7 +20,6 @@ function _buildenv_set() {
   shift
   _buildenv_save $_varname
   export ${_varname}="$@"
-  echo "> ${_varname}=$@"
 }
 
 function _buildenv_save() {
@@ -36,6 +35,9 @@ function _buildenv_save() {
 function _buildenv_restore() {
   local _varname=$1
   local _savevar="_buildenv_save_$_varname"
+  if [ "$_buildenv_saved_vars" == "${_buildenv_saved_vars/$_varname /}" ];then
+    return 0
+  fi
   export ${_varname}="${!_savevar}"
   unset ${_savevar}
   _buildenv_saved_vars=${_buildenv_saved_vars/$_varname /}
@@ -43,7 +45,9 @@ function _buildenv_restore() {
 
 function _buildenv_restore_all() {
   _buildenv_hook restore-all
-  for v in $_buildenv_saved_vars;do
+  vars=$_buildenv_saved_vars
+  for v in $vars;do
+    v=$(tr -d ' ' <<<$v)
     _buildenv_restore $v
   done
 }
