@@ -1,1 +1,1 @@
-exec ssh -O BatchMode=yes $@
+exec ssh -o BatchMode=yes -o VisualHostKey=no $@
