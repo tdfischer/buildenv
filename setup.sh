@@ -144,9 +144,12 @@ function buildenv_report() {
 }
 
 function buildenv_update() {
-  if _buildenv_update_available;then
+  _buildenv_update_check
+  if [ $? -eq 0 ];then
     echo "Downloading update..."
     _buildenv_apply_update
+    echo "Reloading buildenv..."
+    source $BUILDENV_HOME/setup.sh
   else
     echo "No updates available."
   fi
