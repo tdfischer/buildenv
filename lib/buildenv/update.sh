@@ -3,22 +3,23 @@ source $BUILDENV_HOME/lib/buildenv/hooks.sh
 function _buildenv_background_update_check() {
   if [ ! -f $BUILDENV_HOME/.update-available ];then
     _buildenv_debug "Starting background update check"
-    if _buildenv_update_available;then
-      _buildenv_debug "Update available!"
+    _buildenv_update_check
+    if [ $? -eq 0 ];then
       touch $BUILDENV_HOME/.update-available
-    else
-      _buildenv_debug "No update available."
     fi
   fi
 }
 
-function _buildenv_update_available() {
-  GIT_SSH="$BUILDENV_HOME/ssh-update-wrapper.sh" git --git-dir=$BUILDENV_HOME/.git/ remote update origin 2>/dev/null > /dev/null
+function _buildenv_update_check() {
+  _buildenv_debug "Checking for update..."
+  GIT_SSH="$BUILDENV_HOME/ssh-update-wrapper.sh" git --git-dir=$BUILDENV_HOME/.git/ remote update origin
   local _len=$(git --git-dir=$BUILDENV_HOME/.git/ log master..origin/master | wc -l)
   _buildenv_hook update-check
   if [ $_len -gt 0 ];then
+    _buildenv_debug "Update available!"
     return 0
   fi
+  _buildenv_debug "No update available."
   return 1
 }
 
