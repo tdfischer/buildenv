@@ -80,6 +80,20 @@ function _buildenv_restore_all() {
   done
 }
 
+# Sources a file if it exists
+# Usage:
+# _buildenv_source_file /path/to/file
+#
+# Returns 0 on success, 1 on failure.
+function _buildenv_source_file() {
+  _buildenv_debug "Sourcing $1"
+  if [ -f "$1" ];then
+    source $1
+    return 0
+  fi
+  return 1
+}
+
 # Runs a buildenv hook.
 # Usage:
 # _buildenv_hook hookname
@@ -107,9 +121,8 @@ function _buildenv_run_hook() {
   local _modname=$2
   local _script="$BUILDENV_HOME/$_hook.d/$_modname.sh"
   _buildenv_debug $_script
-  if [ -f "$_script" ];then
-    source "$_script"
-  fi
+  _buildenv_source_file "$BUILDENV_HOME/$_hook.d/$_modname.sh"
+  _buildenv_source_file "$BUILDENV_HOME/config/$BUILDENV_CONFIG-hooks/$_hook.d/$_modname.sh"
 }
 
 function _buildenv_env_hook() {
@@ -354,14 +367,12 @@ function _buildenv_load_config() {
   export BUILDENV_CONFIG=$1
   _buildenv_hook pre-load-config
   _buildenv_debug "Loading config from $_config"
-  if [ -f "$_config" ];then
-    source $_config
+  if _buildenv_source_file "$_config";then
     _ret=0
   fi
-  local _config="~/.local/share/buildenv/config/$1.sh"
+  _config="~/.local/share/buildenv/config/$1.sh"
   _buildenv_debug "Loading user config from $_config"
-  if [ -f "$_config" ];then
-    source $_config
+  if _buildenv_source_file "$_config";then
     _ret=0
   fi
   _buildenv_hook load-config
