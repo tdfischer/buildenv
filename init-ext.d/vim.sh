@@ -1,11 +1,11 @@
 _buildenv_vimfiles=""
 function _buildenv_vim_viminit() {
-  local _vimrc=""
+  local _vimrc="set runtimepath=${BUILDENV_HOME}/vim/,\$HOME/.vim,\$VIM/vimfiles,\$VIMRUNTIME,\$VIM/vimfiles/after,\$HOME/.vim/after"
   _oifs=$IFS
   IFS=":"
   for _rc in $_buildenv_vimfiles;do
     if [ -f "$_rc" ];then
-      _vimrc="source $_rc|"
+      _vimrc="${_vimrc}|source $_rc"
     fi
   done
   IFS=$_oifs
