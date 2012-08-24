@@ -5,6 +5,8 @@ mydir=$(readlink -e $0)
 mydir=$(dirname $mydir)
 source $mydir/setup.sh
 
+_buildenv_apply_update
+
 echo "# Added by $mydir/install.sh" >> ~/.bashrc
 echo "# Loads buildenv." >> ~/.bashrc
 echo "if [ ! -f $mydir/setup.sh ];then" >> ~/.bashrc

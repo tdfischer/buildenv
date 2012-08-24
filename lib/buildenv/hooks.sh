@@ -6,6 +6,8 @@
 # First case runs the hook for all loaded environments.
 # Second case runs the hook for only the specified environment.
 
+source $BUILDENV_HOME/lib/buildenv/buildenv.sh
+
 function _buildenv_hook() {
   local _hook=$1
   shift

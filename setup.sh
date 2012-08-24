@@ -8,6 +8,8 @@
 #   BUILDENV_HOME - The place to look for your *-env.d/ files. Defaults to `dirname /path/to/setup.sh`
 #   BUILDENV_PREFIX - Where you will install your sources. Defaults to /opt/buildenv/
 
+#export BUILDENV_DEBUG="1"
+
 export BUILDENV_VERSION="0.1.0"
 export BUILDENV_HOME=${BUILDENV_HOME:-`dirname $BASH_SOURCE`}
 export BUILDENV_PREFIX=${BUILDENV_PREFIX:-/opt/buildenv}
@@ -16,106 +18,12 @@ export BUILDENV_SRC_ROOT=${BUILDENV_SRC:-$HOME/Projects/}
 export BUILDENV_LOADED=""
 export BUILDENV_EXTENSIONS=""
 
+source $BUILDENV_HOME/lib/buildenv/buildenv.sh
 source $BUILDENV_HOME/lib/buildenv/hooks.sh
 source $BUILDENV_HOME/lib/buildenv/vars.sh
 source $BUILDENV_HOME/lib/buildenv/prompt.sh
 source $BUILDENV_HOME/lib/buildenv/aliases.sh
-
-function _buildenv_debug() {
-  if [ -n "$BUILDENV_DEBUG" ];then
-    echo "D: $@" 1>&2
-  fi
-}
-
-function _buildenv_error() {
-  echo "E: $@" 1>&2
-}
-
-function _buildenv_is_active() {
-  if [ -z "$BUILDENV_MASTER" ];then
-    echo "Must be run within a buildenv."
-    return 1
-  fi
-  return 0
-}
-
-# Sources a file if it exists
-# Usage:
-# _buildenv_source_file /path/to/file
-#
-# Returns 0 on success, 1 on failure.
-function _buildenv_source_file() {
-  if [ -f "$1" ];then
-    _buildenv_debug "Sourcing $1"
-    source $1
-    return 0
-  fi
-  return 1
-}
-
-# Searches for and loads a file
-# Checks the following locations:
-#  $BUILDENV_HOME/$file
-#  $BUILDENV_HOME/config/$BUILDENV_CONFIG/$file
-#  ~/.buildenv/$file
-#  ~/.buildenv/config/$BUILDENV_CONFIG/$file
-function _buildenv_load_file() {
-  _buildenv_source_file $BUILDENV_HOME/$1
-  _buildenv_source_file $BUILDENV_HOME/config/$BUILDENV_CONFIG/$1
-  _buildenv_source_file ~/.buildenv/$1
-  _buildenv_source_file ~/.buildenv/config/$BUILDENV_CONFIG/$1
-}
-
-function _buildenv_is_loaded() {
-  if [[ "$BUILDENV_LOADED" != "${BUILDENV_LOADED/ $1 /}" ]];then
-    return 0
-  fi
-  return 1
-}
-
-function _buildenv_declare_dependency() {
-  _buildenv_load $@
-}
-
-function _buildenv_load() {
-  if [ -z "$1" ];then
-    echo "Usage: _buildenv_load package-name"
-    return
-  fi
-  local _envname=$1
-  if _buildenv_is_loaded $_envname;then
-    return
-  fi
-  export BUILDENV_PATH=${BUILDENV_PREFIX}/$_envname
-  _buildenv_pkg_set PATH $_envname "$BUILDENV_PATH"
-  export BUILDENV_LOADED=" $_envname$BUILDENV_LOADED"
-  _buildenv_source_file "${BUILDENV_HOME}/environments/$_envname.sh"
-  _buildenv_set PATH "$BUILDENV_PATH/bin:$PATH"
-  _buildenv_set LD_LIBRARY_PREFIX "$BUILDENV_PATH/lib/:$LD_LIBRARY_PREFIX"
-  echo "Loaded $_envname environment."
-  _buildenv_hook buildenv-loaded
-}
-
-function _buildenv_unload() {
-  if [ -z "$1" ];then
-    echo "Usage: _buildenv_unload package-name"
-    return
-  fi
-  _buildenv_env_hook "_teardown" $_envname
-  BUILDENV_LOADED=${BUILDENV_LOADED/ $1 / }
-  _buildenv_hook buildenv-changed
-}
-
-function _buildenv_autodetect() {
-  _buildenv_auto_scm_url=$(git config --local --get remote.origin.url)
-  _buildenv_auto_scm="git"
-  if [ -n "$_buildenv_auto_git_url" ];then
-    _buildenv_auto_name=$(basename "${_buildenv_git_url#*:}" .git)
-    return 0
-  else
-    _buildenv_auto_name=$(basename `pwd`)
-  fi
-}
+source $BUILDENV_HOME/lib/buildenv/update.sh
 
 function _buildenv_complete() { 
   local cur prev environs
@@ -179,38 +87,6 @@ function buildenv_load_extension() {
   fi
 }
 
-function _buildenv_load_defaults() {
-  local _parent=$(readlink /proc/$PPID/exe)
-  _parent=${_parent##*/bin/}
-  _buildenv_load_config $USER
-#  _buildenv_load_config $_parent
-#  _buildenv_load_config $TERM
-#  _buildenv_load_config $DESKTOP_SESSION
-#  local _host=$HOSTNAME
-#  while [ "${_host}" != "${_host/./}" ];do
-#    _buildenv_load_config $_host
-#    _host=${_host#*.}
-#  done
-}
-
-function _buildenv_load_config() {
-  local _config="$BUILDENV_HOME/config/$1.sh"
-  local _ret=1
-  export BUILDENV_OLD_CONFIG=${BUILDENV_CONFIG}
-  export BUILDENV_CONFIG=$1
-  _buildenv_debug "Loading config from $_config"
-  if _buildenv_source_file "$_config";then
-    _ret=0
-  fi
-  _config="~/.local/share/buildenv/config/$1.sh"
-  _buildenv_debug "Loading user config from $_config"
-  if _buildenv_source_file "$_config";then
-    _ret=0
-  fi
-  _buildenv_hook load-config
-  return $_ret
-}
-
 function buildenv() {
   _buildenv_autodetect
   local _envs_to_load=${@:-$_buildenv_auto_name}
@@ -268,7 +144,21 @@ function buildenv_report() {
   _buildenv_hook report
 }
 
+function buildenv_update() {
+  if _buildenv_update_available;then
+    echo "Downloading update..."
+    _buildenv_apply_update
+  else
+    echo "No updates available."
+  fi
+}
+
 export PROMPT_COMMAND="_buildenv_build_prompt;$PROMPT_COMMAND"
 _buildenv_load_defaults
 _buildenv_debug "Buildenv $BUILDENV_VERSION loaded."
 _buildenv_hook init
+if [ -f $BUILDENV_HOME/.update-available ];then
+  echo "An update is available. Run buildenv_update to update."
+else
+  $BUILDENV_HOME/background-update.sh
+fi

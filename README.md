@@ -50,3 +50,10 @@ prompt
   Whenever the shell prompt is regenerated.
   WARNING: This function needs to be pretty much *instant*, as bash does not
   show the prompt 'till it is done.
+
+# Update Mechanism
+
+There is a rudimentary update mechanism that assumes $BUILDENV_HOME is a git
+repository, originally cloned from somewhere (has an 'origin' remote).
+
+To use, run buildenv_update
