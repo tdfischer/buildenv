@@ -1,4 +1,5 @@
-source $BUILDENV_HOME/lib/buildenv/hooks.sh
+source $BUILDENV_HOME/lib/load.sh
+_buildenv_lib_include buildenv/hooks.sh
 
 function _buildenv_background_update_check() {
   if [ ! -f $BUILDENV_HOME/.update-available ];then
