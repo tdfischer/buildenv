@@ -163,5 +163,5 @@ _buildenv_hook init
 if [ -f $BUILDENV_HOME/.update-available ];then
   echo "An update is available. Run buildenv_update to update."
 else
-  $BUILDENV_HOME/background-update.sh
+  $BUILDENV_HOME/background-update.sh 2>&1 >/dev/null
 fi
