@@ -1,3 +1,5 @@
+_buildenv_lib_include buildenv/prompt.sh
+
 function _buildenv_git_branch() {
   local prompt=""
   local ref=""
@@ -20,4 +22,3 @@ function _buildenv_git_status() {
   fi
 }
 
-export PS1="\[\033[1;32m\]\$(_buildenv_git_branch)\[\033[1;31m\]\$(_buildenv_git_status)\[\033[0m\]$PS1"

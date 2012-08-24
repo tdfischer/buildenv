@@ -38,6 +38,9 @@ init
 report
   Called from within buildenv_report.
 
+restore-all
+  _buildenv_restore_all is about to restore the environment to original values
+
 load-config
   A configuration is activated.
 

@@ -22,6 +22,7 @@ _buildenv_lib_include buildenv/debug.sh
 _buildenv_lib_include buildenv/hooks.sh
 _buildenv_lib_include buildenv/buildenv.sh
 _buildenv_lib_include buildenv/prompt.sh
+_buildenv_lib_include buildenv/vars.sh
 
 
 function buildenv_add_dependency() {
@@ -61,8 +62,7 @@ function buildenv() {
     fi
     _buildenv_load $_envname
   done
-  _buildenv_save CONFIG_SITE
-  export CONFIG_SITE="${BUILDENV_HOME}/config.site"
+  _buildenv_set CONFIG_SITE "${BUILDENV_HOME}/config.site"
   echo -e "Loaded environments: \E[1;33m$BUILDENV_LOADED\E[0m"
   echo -e "Master environment: \E[1;32m$BUILDENV_MASTER\E[0m"
   _buildenv_hook buildenv-changed
@@ -116,9 +116,10 @@ function buildenv_update() {
   fi
 }
 
-export PROMPT_COMMAND="_buildenv_build_prompt;$PROMPT_COMMAND"
+_buildenv_restore_all
 _buildenv_load_defaults
 _buildenv_debug "Buildenv $BUILDENV_VERSION loaded."
+_buildenv_set PROMPT_COMMAND "_buildenv_build_prompt;$PROMPT_COMMAND"
 _buildenv_hook init
 if [ -f $BUILDENV_HOME/.update-available ];then
   echo "An update is available. Run buildenv_update to update."
