@@ -402,12 +402,12 @@ function buildenv() {
 }
 
 # Change to the source directory
-function cs() {
+function buildenv_cs() {
   cd $BUILDENV_SOURCE
 }
 
 # Change to the build directory
-function cb() {
+function buildenv_cb() {
   if [ ! -d "$BUILDENV_BUILD" ];then
     echo "Creating new build directory in $BUILDENV_BUILD"
     mkdir -p $BUILDENV_BUILD
@@ -415,7 +415,7 @@ function cb() {
   cd $BUILDENV_BUILD
 }
 
-function build() {
+function buildenv_build() {
   cb
   echo "Building in $BUILDENV_BUILD"
   if [ -f "$BUILDENV_SOURCE/CMakeLists.txt" ];then
@@ -426,6 +426,18 @@ function build() {
   fi
 }
 
+function buildenv_report() {
+  echo "Buildenv $BUILDENV_VERSION loaded."
+  echo "Home: $BUILDENV_HOME"
+  echo "Build root: $BUILDENV_BUILD_ROOT"
+  echo "Source root: $BUILDENV_SOURCE_ROOT"
+  echo "Current buildenv: $BUILDENV_MASTER"
+  echo "Extensions: $BUILDENV_EXTENSIONS"
+  _buildenv_hook report
+}
+
 export PROMPT_COMMAND="_buildenv_build_prompt;$PROMPT_COMMAND"
 _buildenv_load_defaults
 _buildenv_debug "Buildenv $BUILDENV_VERSION loaded."
+
+source lib/buildenv/aliases.sh
