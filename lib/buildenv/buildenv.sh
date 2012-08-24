@@ -66,6 +66,9 @@ function _buildenv_load_defaults() {
   local _parent=$(readlink /proc/$PPID/exe)
   _parent=${_parent##*/bin/}
   _buildenv_load_config $USER
+  if [ $? -gt 0 ];then
+    _buildenv_load_config _default
+  fi
 #  _buildenv_load_config $_parent
 #  _buildenv_load_config $TERM
 #  _buildenv_load_config $DESKTOP_SESSION

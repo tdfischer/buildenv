@@ -1,0 +1,2 @@
+buildenv_load_extension prompt
+buildenv_load_extension autocomplete
