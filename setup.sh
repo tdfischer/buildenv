@@ -440,4 +440,4 @@ export PROMPT_COMMAND="_buildenv_build_prompt;$PROMPT_COMMAND"
 _buildenv_load_defaults
 _buildenv_debug "Buildenv $BUILDENV_VERSION loaded."
 
-source lib/buildenv/aliases.sh
+source $BUILDENV_HOME/lib/buildenv/aliases.sh
