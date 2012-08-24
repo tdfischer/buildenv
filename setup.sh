@@ -312,13 +312,17 @@ function _buildenv_build_prompt() {
   fi
   _src=${PWD#$BUILDENV_SRC_ROOT}
   _build=${PWD#$BUILDENV_BUILD_ROOT}
+  _type=""
   if [ "$PWD" != "$_src" ];then
+    _type="src"
     _project="$_src"
   elif [ "$PWD" != "$_build" ];then
+    _type="bld"
     _project="$_build"
   fi
   export BUILDENV_SOURCE="$BUILDENV_SRC_ROOT/$_project"
   export BUILDENV_BUILD="$BUILDENV_BUILD_ROOT/$_project"
+  export BUILDENV_CWD_TYPE="$_type"
   _buildenv_debug "CWD: $PWD"
   _buildenv_debug "Current source: $BUILDENV_SOURCE $_src"
   _buildenv_debug "Current build: $BUILDENV_BUILD $_build"
