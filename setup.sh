@@ -48,12 +48,28 @@ function buildenv_load_extension() {
 }
 
 function buildenv() {
-  _buildenv_autodetect
-  local _envs_to_load=${@:-$_buildenv_auto_name}
-  if [ -z "$_envs_to_load" ];then
-    echo "Usage: buildenv package-name"
-    return 0
-  fi
+  local _newmaster=""
+  OPTIND=1
+  while getopts "lm:" opt;do
+    case $opt in
+      l)
+        echo "Loaded environments: $BUILDENV_LOADED";
+        return 0
+        ;;
+      m)
+        _newmaster=$OPTARG
+        ;;
+      \?)
+        echo "Usage: buildenv [-m new-master] [-l] package-name"
+        return 0
+        ;;
+    esac
+  done
+  shift $((OPTIND-1))
+  if [ -z "$_newmaster" ];then
+    _buildenv_autodetect
+    local _envs_to_load=${@:-$_buildenv_auto_name}
+  fi 
 
   for _envname in $_envs_to_load;do
     if [ -z "$BUILDENV_MASTER" ];then
@@ -62,7 +78,17 @@ function buildenv() {
     fi
     _buildenv_load $_envname
   done
-  _buildenv_set CONFIG_SITE "${BUILDENV_HOME}/config.site"
+  if [ -n "$_newmaster" ]; then
+    if [ -z "$BUILDENV_MASTER" ];then
+      export BUILDENV_MASTER=$_newmaster
+      _buildenv_hook firstrun
+    else
+      export BUILDENV_MASTER=$_newmaster
+    fi
+    echo "Setting master buildenv to $_newmaster"
+    _buildenv_load $_newmaster
+  fi
+  #_buildenv_set CONFIG_SITE "${BUILDENV_HOME}/config.site"
   echo -e "Loaded environments: \E[1;33m$BUILDENV_LOADED\E[0m"
   echo -e "Master environment: \E[1;32m$BUILDENV_MASTER\E[0m"
   _buildenv_hook buildenv-changed
@@ -98,9 +124,53 @@ function buildenv_report() {
   echo "Home: $BUILDENV_HOME"
   echo "Build root: $BUILDENV_BUILD_ROOT"
   echo "Source root: $BUILDENV_SRC_ROOT"
-  echo "Current buildenv: $BUILDENV_MASTER"
+  echo "Master buildenv: $BUILDENV_MASTER"
+  echo "Loaded buildenvs: $BUILDENV_LOADED"
   echo "Extensions: $BUILDENV_EXTENSIONS"
   _buildenv_hook report
+}
+
+function buildenv_save() {
+  _buildenv_is_active || return
+  local _varname=$1
+  _buildenv_save_env $BUILDENV_MASTER $_varname
+  echo "Saved $_varname."
+}
+
+function buildenv_set() {
+  local _varname=$1
+  shift 1
+  _buildenv_set $_varname "$@"
+  echo "Saving $BUILDENV_MASTER"
+  _buildenv_save_env $BUILDENV_MASTER $_varname
+  echo "$_varname=\"${!_varname}\""
+}
+
+function buildenv_edit_config() {
+  local _hook=$1
+  if [ -z "$_hook" ];then
+    _hook="_load"
+  fi
+  _buildenv_edit "${BUILDENV_HOME}/config/$BUILDENV_MASTER/$BUILDENV_CONFIG.sh"
+}
+
+function buildenv_edit() {
+  _buildenv_is_active || return
+  local _edit=$EDITOR
+  local _hook=$1
+  if [ -z "$_edit" ];then
+    _edit="vi"
+  fi
+  if [ -z "$_hook" ];then
+    _hook="_load"
+  fi
+  $EDITOR "${BUILDENV_HOME}/environments/$BUILDENV_MASTER/$_hook.sh"
+}
+
+function buildenv_config() {
+  local _configname=$1
+  _buildenv_load_config $_configname
+  echo "Configuration loaded."
 }
 
 function buildenv_update() {
@@ -114,6 +184,16 @@ function buildenv_update() {
   else
     echo "No updates available."
   fi
+}
+
+function buildenv_unload() {
+  _buildenv_hook unload
+  for _envname in $BUILDENV_LOADED;do
+    _buildenv_unload $_envname
+  done
+  _buildenv_restore_all
+  unset BUILDENV_MASTER
+  _buildenv_hook unloaded
 }
 
 _buildenv_restore_all
