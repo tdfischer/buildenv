@@ -34,11 +34,29 @@ function _buildenv_load() {
   export BUILDENV_PATH=${BUILDENV_PREFIX}/$_envname
   _buildenv_pkg_set PATH $_envname "$BUILDENV_PATH"
   export BUILDENV_LOADED=" $_envname$BUILDENV_LOADED"
-  _buildenv_source_file "${BUILDENV_HOME}/environments/$_envname.sh"
+  _buildenv_source_file "${BUILDENV_HOME}/environments/$_envname/_saved.sh"
+  _buildenv_source_file "${BUILDENV_HOME}/environments/$_envname/_load.sh"
   _buildenv_set PATH "$BUILDENV_PATH/bin:$PATH"
   _buildenv_set LD_LIBRARY_PREFIX "$BUILDENV_PATH/lib/:$LD_LIBRARY_PREFIX"
   echo "Loaded $_envname environment."
   _buildenv_hook buildenv-loaded
+}
+
+function _buildenv_save_env() {
+  local _envname=$1
+  local _varname=$2
+  _buildenv_hook buildenv-save
+  local _savefile="${BUILDENV_HOME}/environments/$1/_saved.sh"
+  mkdir -p `dirname $_savefile`
+  _buildenv_debug "Saving to $_savefile"
+  echo "# Saved on $(date)" >> $_savefile
+  if [ "$_varname" == "PS1" ]; then
+    # Special case
+    echo "${_varname}=\"${_buildenv_save_PS1}\"" >> $_savefile
+  else
+    _buildenv_debug "Saving ${_varname} as ${!_varname}"
+    echo "_buildenv_set ${_varname} \"${!_varname}\"" >> $_savefile
+  fi
 }
 
 function _buildenv_unload() {
@@ -97,3 +115,11 @@ function _buildenv_load_config() {
   return $_ret
 }
 
+function _buildenv_edit() {
+  local _edit=$EDITOR
+  local _file=$1
+  if [ -z "$_edit" ];then
+    _edit="vi"
+  fi
+  $_edit $_file
+}
