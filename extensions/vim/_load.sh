@@ -1,6 +1,6 @@
 _buildenv_vimfiles=""
 function _buildenv_vim_viminit() {
-  local _vimrc="set runtimepath=${BUILDENV_HOME}/vim/,\$HOME/.vim,\$VIM/vimfiles,\$VIMRUNTIME,\$VIM/vimfiles/after,\$HOME/.vim/after"
+  local _vimrc="set runtimepath=${BUILDENV_HOME}/config/${BUILDENV_CONFIG}.vim/,\$HOME/.vim,\$VIM/vimfiles,\$VIMRUNTIME,\$VIM/vimfiles/after,\$HOME/.vim/after"
   _oifs=$IFS
   IFS=":"
   for _rc in $_buildenv_vimfiles;do
@@ -18,5 +18,6 @@ function _buildenv_vim_add_vimrc() {
 }
 
 _buildenv_vim_add_vimrc ~/.vimrc
+_buildenv_vim_add_vimrc "${BUILDENV_HOME}/config/${BUILDENV_CONFIG}.vimrc"
 
 _buildenv_set VIMINIT "$(_buildenv_vim_viminit)"
