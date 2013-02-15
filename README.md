@@ -3,8 +3,28 @@ Writing an environment:
   When unloaded, it will execute environments/<name>/_teardown.sh
   Add hooks to environments/<name>/<hook>.sh
 
-# Available hooks:
+# Extensions
 
+Extensions are small plugins for buildenv that provide extra functionality,
+such as prompt information, support for other buildsystems, environment
+variables, etc.
+
+To enable an extension, edit $BUILDENV_HOME/config/$USER.sh and add the
+following:
+
+  buildenv_load_extension extension-name
+
+## Available extensions:
+
+### vim
+### pkgconfig
+### cmake
+### git
+### autojump
+### autocomplete
+### prompt
+
+# Available hooks:
 
 ## Special hooks:
 
