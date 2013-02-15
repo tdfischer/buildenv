@@ -13,6 +13,10 @@ function _buildenv_background_update_check() {
 
 function _buildenv_update_check() {
   _buildenv_debug "Checking for update..."
+  if [ ! -f `which git 2>/dev/null` ];then
+    _buildenv_debug "Git not installed. No updates available."
+    return 1
+  fi
   GIT_SSH="$BUILDENV_HOME/ssh-update-wrapper.sh" git --git-dir=$BUILDENV_HOME/.git/ remote update origin
   local _len=$(git --git-dir=$BUILDENV_HOME/.git/ log master..origin/master | wc -l)
   _buildenv_hook update-check
