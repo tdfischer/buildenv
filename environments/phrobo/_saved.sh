@@ -8,3 +8,5 @@ _buildenv_set GIT_AUTHOR_NAME "Trever Fischer"
 _buildenv_set GIT_COMMITTER_NAME "Trever Fischer"
 # Saved on Mon Feb 11 23:03:11 EST 2013
 _buildenv_set VIRTUAL_ENV_DISABLE_PROMPT "1"
+# Saved on Tue Mar 19 10:17:24 EDT 2013
+_buildenv_set RPM_PACKAGER "Trever Fischer <tdfischer@phrobo.net>"
