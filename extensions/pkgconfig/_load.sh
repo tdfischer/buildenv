@@ -65,5 +65,3 @@ function _buildenv_pkg_config() {
   _ret=$?
   return $_ret
 }
-
-_buildenv_set PKG_CONFIG_PATH "$BUILDENV_PATH/lib/pkgconfig/:$PKG_CONFIG_PATH"
