@@ -6,3 +6,5 @@ _buildenv_set PKG_CONFIG_PATH "/opt/buildenv/mex/lib/pkgconfig/"
 _buildenv_set XDG_DATA_DIRS "/home/tdfischer/Projects/collabora/mex/cogl/data/"
 # Saved on Thu Apr  4 12:31:16 EDT 2013
 _buildenv_set XDG_DATA_DIRS "/home/tdfischer/Projects/collabora/mex/media-explorer/data/"
+# Saved on Thu Apr 18 10:05:20 EDT 2013
+_buildenv_set XDG_DATA_DIRS "/home/tdfischer/Projects/collabora/mex/media-explorer/data/:/opt/buildenv/mex/share/:/usr/share/"
