@@ -1,4 +1,3 @@
-call pathogen#infect('lib/flake8')
 syntax on
 filetype plugin indent on
 set smartindent
