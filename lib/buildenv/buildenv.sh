@@ -34,10 +34,10 @@ function _buildenv_load() {
   export BUILDENV_PATH=${BUILDENV_PREFIX}/$_envname
   _buildenv_pkg_set PATH $_envname "$BUILDENV_PATH"
   export BUILDENV_LOADED=" $_envname$BUILDENV_LOADED"
+  _buildenv_set PATH "$BUILDENV_PATH/bin:$PATH"
+  _buildenv_set LD_LIBRARY_PATH "$BUILDENV_PATH/lib/:$LD_LIBRARY_PATH"
   _buildenv_source_file "${BUILDENV_HOME}/environments/$_envname/_saved.sh"
   _buildenv_source_file "${BUILDENV_HOME}/environments/$_envname/_load.sh"
-  _buildenv_set PATH "$BUILDENV_PATH/bin:$PATH"
-  _buildenv_set LD_LIBRARY_PREFIX "$BUILDENV_PATH/lib/:$LD_LIBRARY_PREFIX"
   echo "Loaded $_envname environment."
   _buildenv_hook buildenv-loaded
 }
