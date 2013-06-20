@@ -3,3 +3,8 @@ buildenv_load_extension git
 buildenv_load_extension prompt
 buildenv_load_extension vim
 buildenv_load_extension autojump
+buildenv_load_extension ruby
+buildenv_load_extension autotools
+buildenv_load_extension cmake
+buildenv_load_extension pkgconfig
+buildenv_load_extension virtualenv
