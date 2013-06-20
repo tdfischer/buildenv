@@ -28,3 +28,11 @@ function _buildenv_load_file() {
   _buildenv_source_file ~/.buildenv/$1
   _buildenv_source_file ~/.buildenv/config/$BUILDENV_CONFIG/$1
 }
+
+function _buildenv_environment_path() {
+  if [ -n "$1" ];then
+    echo "$BUILDENV_HOME/environments/$BUILDENV_MASTER/$1"
+  else
+    echo "$BUILDENV_HOME/environments/$BUILDENV_MASTER"
+  fi
+}
