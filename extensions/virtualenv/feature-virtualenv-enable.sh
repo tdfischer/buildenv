@@ -1,0 +1,4 @@
+virtualenv $BUILDENV_PATH
+_buildenv_set VIRTUAL_ENV_DISABLE_PROMPT 1
+_buildenv_set _buildenv_virtual_name $BUILDENV_MASTER
+source $BUILDENV_PATH/bin/activate
