@@ -2,7 +2,9 @@
 # arg2 - package
 function _buildenv_pkg_varname() {
   _buildenv_debug $@
-  echo "BUILDENV_$1_$(echo $2 | sed -e 's/[^a-zA-Z0-9_]/_/')"
+  local _envname=$(echo $1 | sed -e 's/[^a-zA-Z0-9_]/_/g')
+  local _varname=$(echo $2 | sed -e 's/[^a-zA-Z0-9_]/_/g')
+  echo "BUILDENV_${_envname}_${_varname}"
 }
 
 function _buildenv_pkg_get() {
