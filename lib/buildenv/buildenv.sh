@@ -2,6 +2,7 @@ source $BUILDENV_HOME/lib/load.sh
 
 _buildenv_lib_include buildenv/fs.sh
 _buildenv_lib_include buildenv/debug.sh
+_buildenv_lib_include buildenv/platform.sh
 
 function _buildenv_is_active() {
   if [ -z "$BUILDENV_MASTER" ];then
@@ -35,7 +36,7 @@ function _buildenv_load() {
   _buildenv_pkg_set PATH $_envname "$BUILDENV_PATH"
   export BUILDENV_LOADED=" $_envname$BUILDENV_LOADED"
   _buildenv_set PATH "$BUILDENV_PATH/bin:$PATH"
-  _buildenv_set LD_LIBRARY_PATH "$BUILDENV_PATH/lib/:$LD_LIBRARY_PATH"
+  _buildenv_set LD_LIBRARY_PATH "$BUILDENV_PATH/$(_buildenv_libdir)/:$LD_LIBRARY_PATH"
   _buildenv_source_file "${BUILDENV_HOME}/environments/$_envname/_saved.sh"
   _buildenv_source_file "${BUILDENV_HOME}/environments/$_envname/_load.sh"
   echo "Loaded $_envname environment."
