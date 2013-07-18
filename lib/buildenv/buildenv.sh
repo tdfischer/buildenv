@@ -20,7 +20,7 @@ function _buildenv_is_loaded() {
 }
 
 function _buildenv_declare_dependency() {
-  _buildenv_load $@
+  export BUILDENV_DEPENDENCIES=" $@$BUILDENV_DEPENDENCIES"
 }
 
 function _buildenv_load() {
@@ -32,6 +32,7 @@ function _buildenv_load() {
   if _buildenv_is_loaded $_envname;then
     return
   fi
+  export BUILDENV_DEPENDENCIES=""
   export BUILDENV_PATH=${BUILDENV_PREFIX}/$_envname
   _buildenv_pkg_set PATH $_envname "$BUILDENV_PATH"
   export BUILDENV_LOADED=" $_envname$BUILDENV_LOADED"
@@ -41,6 +42,11 @@ function _buildenv_load() {
   _buildenv_source_file "${BUILDENV_HOME}/environments/$_envname/_load.sh"
   echo "Loaded $_envname environment."
   _buildenv_hook buildenv-loaded
+  local _deps=$BUILDENV_DEPENDENCIES
+  for dep in $_deps;do
+    echo "Loading dependency $dep"
+    _buildenv_load $dep
+  done
 }
 
 function _buildenv_save_env() {
