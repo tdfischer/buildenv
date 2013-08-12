@@ -94,18 +94,19 @@ function! GOBGenerateC()
     exec "normal oobject_class->set_property = " prefix . "_set_property;"
     exec "normal oobject_class->get_property = " prefix . "_get_property;"
     normal og_object_class_install_properties (object_class,
-    normal oN_PROPERTIES
+    normal oN_PROPERTIES,
     normal oobj_properties);
     normal o}
     normal o
 
     " set_property
     normal ostatic void
-    exec "normal o" . prefix . "_set_property (" . typeName "*self,"
+    exec "normal o" . prefix . "_set_property (GObject *object,"
     normal oguint property_id,
     normal oconst GValue *value,
     normal oGParamSpec *pspec)
     normal o{
+    exec "normal o" . typeName . " *self = " . defineName . " (object);"
     normal oswitch (property_id) {
     normal odefault:
     normal oG_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -116,11 +117,12 @@ function! GOBGenerateC()
 
     " get_property
     normal ostatic void
-    exec "normal o" . prefix . "_get_property (" . typeName "*self,"
+    exec "normal o" . prefix . "_get_property (GObject *object,"
     normal oguint property_id,
     normal oGValue *value,
     normal oGParamSpec *pspec)
     normal o{
+    exec "normal o" . typeName . " *self = " . defineName . " (object);"
     normal oswitch (property_id) {
     normal odefault:
     normal oG_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
