@@ -9,5 +9,10 @@ set number
 autocmd BufRead *.vala,*.vapi set efm=%f:%l.%c-%[%^:]%#\ %t%[%^:]%#:\ %m
 au BufRead,BufNewFile *.vala,*.vapi setfiletype vala
 set tw=80
+au BufNewFile,BufRead COMMIT_EDITMSG set spell
+hi clear SpellBad
+hi SpellBad cterm=underline
 
 source $BUILDENV_HOME/vim/gobgen.vim
+
+execute pathogen#infect()
