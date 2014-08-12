@@ -33,6 +33,7 @@ function _buildenv_load() {
     return
   fi
   export BUILDENV_DEPENDENCIES=""
+  local _oldpath=$BUILDENV_PATH
   export BUILDENV_PATH=${BUILDENV_PREFIX}/$_envname
   _buildenv_pkg_set PATH $_envname "$BUILDENV_PATH"
   export BUILDENV_LOADED=" $_envname$BUILDENV_LOADED"
@@ -47,6 +48,9 @@ function _buildenv_load() {
     echo "Loading dependency $dep"
     _buildenv_load $dep
   done
+  if [ -n "$_oldpath" ];then
+    export BUILDENV_PATH=$_oldpath
+  fi
 }
 
 function _buildenv_save_env() {
