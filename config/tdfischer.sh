@@ -8,3 +8,4 @@ buildenv_load_extension autotools
 buildenv_load_extension cmake
 buildenv_load_extension pkgconfig
 buildenv_load_extension virtualenv
+buildenv_load_extension makeenv
