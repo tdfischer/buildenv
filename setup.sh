@@ -30,7 +30,8 @@ _buildenv_lib_include buildenv/features.sh
 function buildenv_add_dependency() {
   _buildenv_is_active || return
   _buildenv_append_environment "_buildenv_declare_dependency '$1'"
-  echo "Added dependency to $_env"
+  buildenv $1
+  echo "Added dependency to $BUILDENV_MASTER"
 }
 
 function buildenv_load_extension() {
