@@ -16,4 +16,4 @@ boost_1_55/bootstrap.sh: boost-1.55.tar.gz
 	tar xfv boost-1.55.tar.gz
 
 boost-1.55.tar.gz:
-	wget http://sourceforge.net/projects/boost/files/latest/download?source=dlp -O $@
+	wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz/download -O $@
