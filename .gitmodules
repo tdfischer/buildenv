@@ -7,3 +7,21 @@
 [submodule "vim/lib/flake8"]
 	path = vim/lib/flake8
 	url = https://github.com/nvie/vim-flake8.git
+[submodule "config/tdfischer.vim/bundle/syntastic"]
+	path = config/tdfischer.vim/bundle/syntastic
+	url = git://github.com/scrooloose/syntastic.git
+[submodule "config/tdfischer.vim/bundle/rainbow_parentheses.vim"]
+	path = config/tdfischer.vim/bundle/rainbow_parentheses.vim
+	url = git://github.com/jien/rainbow_parentheses.vim.git
+[submodule "config/tdfischer.vim/bundle/vim-airline"]
+	path = config/tdfischer.vim/bundle/vim-airline
+	url = git://github.com/bling/vim-airline
+[submodule "config/tdfischer.vim/bundle/vim-dispatch"]
+	path = config/tdfischer.vim/bundle/vim-dispatch
+	url = git://github.com/tpope/vim-dispatch.git
+[submodule "config/tdfischer.vim/bundle/vim-fugitive"]
+	path = config/tdfischer.vim/bundle/vim-fugitive
+	url = git://github.com/tpope/vim-fugitive.git
+[submodule "config/tdfischer.vim/bundle/vim-gitgutter"]
+	path = config/tdfischer.vim/bundle/vim-gitgutter
+	url = git://github.com/airblade/vim-gitgutter.git
