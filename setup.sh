@@ -173,15 +173,10 @@ function buildenv_config() {
 
 function buildenv_update() {
   _buildenv_lib_include buildenv/update.sh
-  _buildenv_update_check
-  if [ $? -eq 0 ];then
-    echo "Downloading update..."
-    _buildenv_apply_update
-    echo "Reloading buildenv..."
-    source $BUILDENV_HOME/setup.sh
-  else
-    echo "No updates available."
-  fi
+  echo "Downloading update..."
+  _buildenv_apply_update
+  echo "Reloading buildenv..."
+  source $BUILDENV_HOME/setup.sh
 }
 
 function buildenv_unload() {
@@ -212,9 +207,4 @@ if tty -s;then
   _buildenv_debug "Buildenv $BUILDENV_VERSION loaded."
   _buildenv_set PROMPT_COMMAND "_buildenv_build_prompt;$PROMPT_COMMAND"
   _buildenv_hook init
-  if [ -f $BUILDENV_HOME/.update-available ];then
-    echo "An update is available. Run buildenv_update to update."
-  else
-    $BUILDENV_HOME/background-update.sh 2>&1 >/dev/null
-  fi
 fi

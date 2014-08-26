@@ -3,9 +3,12 @@ if [ -n "$BUILDENV_VERSION" ];then
 fi
 mydir=$(readlink -e $0)
 mydir=$(dirname $mydir)
-source $mydir/setup.sh
 
-_buildenv_apply_update
+(
+  cd $mydir
+  git submodule init
+  git submodule update
+)
 
 echo "# Added by $mydir/install.sh" >> ~/.bashrc
 echo "# Loads buildenv." >> ~/.bashrc
