@@ -37,6 +37,7 @@ let g:rbpt_colorpairs = [
     \ ]
 
 au VimEnter * RainbowParenthesesToggle
+au VimEnter * AirlineTheme dark
 au Syntax * RainbowParenthesesLoadRound
 au Syntax * RainbowParenthesesLoadSquare
 au Syntax * RainbowParenthesesLoadBraces
