@@ -25,3 +25,6 @@
 [submodule "config/tdfischer.vim/bundle/vim-gitgutter"]
 	path = config/tdfischer.vim/bundle/vim-gitgutter
 	url = git://github.com/airblade/vim-gitgutter.git
+[submodule "config/tdfischer.vim/bundle/tmuxline.vim"]
+	path = config/tdfischer.vim/bundle/tmuxline.vim
+	url = git://github.com/edkolev/tmuxline.vim.git
