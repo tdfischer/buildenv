@@ -1,1 +1,1 @@
-export VIMINIT=$(_buildenv_vim_viminit)
+_buildenv_set VIMINIT "$(_buildenv_vim_viminit)"
