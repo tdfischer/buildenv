@@ -46,6 +46,7 @@ au Syntax * RainbowParenthesesLoadChevrons
 let g:syntastic_cpp_check_header = 1
 let g:syntastic_cpp_compiler_options = '-std=c++11'
 let g:airline_powerline_fonts = 1
+let &colorcolumn=80
 let g:airline#extensions#tmuxline#enabled = 1
 set laststatus=2
 set background=dark
@@ -82,3 +83,8 @@ function! Find(name)
   execute ":e ".l:line
 endfunction
 command! -nargs=1 Find :call Find("<args>")
+augroup CursorLine
+  au!
+  au VimEnter,WinEnter,BufWinEnter * setlocal cursorline cursorcolumn
+  au WinLeave * setlocal nocursorline nocursorcolumn
+augroup END
