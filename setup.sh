@@ -51,7 +51,8 @@ function buildenv() {
   while getopts "lm:" opt;do
     case $opt in
       l)
-        echo "Loaded environments: $BUILDENV_LOADED";
+        echo -e "Loaded environments: \E[1;33m$BUILDENV_LOADED\E[0m";
+        echo -e "Master environment: \E[1;32m$BUILDENV_MASTER\E[0m"
         return 0
         ;;
       m)
@@ -87,8 +88,7 @@ function buildenv() {
     _buildenv_load $_newmaster
   fi
   #_buildenv_set CONFIG_SITE "${BUILDENV_HOME}/config.site"
-  echo -e "Loaded environments: \E[1;33m$BUILDENV_LOADED\E[0m"
-  echo -e "Master environment: \E[1;32m$BUILDENV_MASTER\E[0m"
+  buildenv -l
   _buildenv_hook buildenv-changed
 }
 
