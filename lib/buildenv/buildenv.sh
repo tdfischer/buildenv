@@ -36,6 +36,8 @@ function _buildenv_load() {
   local _oldpath=$BUILDENV_PATH
   export BUILDENV_PATH=${BUILDENV_PREFIX}/$_envname
   _buildenv_pkg_set PATH $_envname "$BUILDENV_PATH"
+  export _oldenv=$BUILDENV_MASTER
+  export BUILDENV_MASTER="$_envname"
   export BUILDENV_LOADED=" $_envname$BUILDENV_LOADED"
   _buildenv_set PATH "$BUILDENV_PATH/bin:$PATH"
   _buildenv_set LD_LIBRARY_PATH "$BUILDENV_PATH/$(_buildenv_libdir)/:$LD_LIBRARY_PATH"
@@ -44,12 +46,16 @@ function _buildenv_load() {
   echo "Loaded $_envname environment."
   _buildenv_hook buildenv-loaded
   local _deps=$BUILDENV_DEPENDENCIES
+  unset BUILDENV_DEPENDENCIES
   for dep in $_deps;do
     echo "Loading dependency $dep"
     _buildenv_load $dep
   done
   if [ -n "$_oldpath" ];then
     export BUILDENV_PATH=$_oldpath
+  fi
+  if [ -n "$_oldname" ];then
+    export BUILDENV_MASTER=$_oldname
   fi
 }
 
