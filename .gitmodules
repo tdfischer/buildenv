@@ -12,7 +12,7 @@
 	url = git://github.com/scrooloose/syntastic.git
 [submodule "config/tdfischer.vim/bundle/rainbow_parentheses.vim"]
 	path = config/tdfischer.vim/bundle/rainbow_parentheses.vim
-	url = git://github.com/jien/rainbow_parentheses.vim.git
+	url = git://github.com/kien/rainbow_parentheses.vim.git
 [submodule "config/tdfischer.vim/bundle/vim-airline"]
 	path = config/tdfischer.vim/bundle/vim-airline
 	url = git://github.com/bling/vim-airline
