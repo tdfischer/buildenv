@@ -1,19 +1,28 @@
-all: build
+VERSION := 1.55.0
+SRC := boost_$(subst .,_,${VERSION})
+PKG := ${SRC}.tar.gz
+RESULT := ${BUILDENV_PATH_boost1_55}/include/boost/version.hpp
+
+all:
+
+${RESULT}: install
+	ls ${SRC}/b2
+	ls ${RESULT}
 
 install: build
-	cd boost_1_55_0 && \
+	cd ${SRC} && \
 	./b2 install
 
-build: boost_1_55/b2
-	cd boost_1_55_0 && \
+build: ${SRC}/b2
+	cd ${SRC} && \
 	./b2 stage
 
-boost_1_55/b2: boost_1_55/bootstrap.sh
-	cd boost_1_55_0 && \
-	./bootstrap.sh --prefix=${BUILDENV_PATH}
+${SRC}/b2: ${SRC}/bootstrap.sh
+	cd ${SRC} && \
+	./bootstrap.sh --prefix=${BUILDENV_PATH_boost1_55}
 
-boost_1_55/bootstrap.sh: boost-1.55.tar.gz
-	tar xfv boost-1.55.tar.gz
+${SRC}/bootstrap.sh: ${PKG}
+	tar xfv ${PKG}
 
-boost-1.55.tar.gz:
-	wget http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.gz/download -O $@
+${PKG}:
+	wget http://sourceforge.net/projects/boost/files/boost/${VERSION}/${PKG}/download -O $@
