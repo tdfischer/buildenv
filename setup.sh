@@ -25,6 +25,7 @@ _buildenv_lib_include buildenv/buildenv.sh
 _buildenv_lib_include buildenv/prompt.sh
 _buildenv_lib_include buildenv/vars.sh
 _buildenv_lib_include buildenv/features.sh
+_buildenv_lib_include buildenv/fs.sh
 
 
 function buildenv_add_dependency() {
@@ -199,6 +200,10 @@ function buildenv_unuse() {
   _buildenv_append_environment "_buildenv_disable_feature '$1'"
   _buildenv_remove_environment "_buildenv_enable_feature '$1'"
   _buildenv_disable_feature "$1"
+}
+
+function buildenv_symlink() {
+  _buildenv_config_symlink $1
 }
 
 if tty -s;then

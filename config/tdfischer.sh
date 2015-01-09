@@ -9,3 +9,6 @@ buildenv_load_extension cmake
 buildenv_load_extension pkgconfig
 buildenv_load_extension virtualenv
 buildenv_load_extension makeenv
+
+buildenv_symlink .tmux.conf
+buildenv_symlink .gitconfig

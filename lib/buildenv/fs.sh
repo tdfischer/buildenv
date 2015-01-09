@@ -36,3 +36,18 @@ function _buildenv_environment_path() {
     echo "$BUILDENV_HOME/environments/$BUILDENV_MASTER"
   fi
 }
+
+# Symlinks a file in $HOME to config/$CONFIG/dotfiles/$1
+function _buildenv_config_symlink() {
+  local _src=$HOME/$1
+  local _dst=$BUILDENV_HOME/config/$BUILDENV_CONFIG/dotfiles/$1
+  _buildenv_debug "Linking $_src to $_dest"
+  if [ -L $_src -o ! -e $_src ]; then
+    if [ -e $_src ]; then
+      unlink $_src || echo "Warning: Could not unlink $_src"
+    fi 
+    ln -s $_dst $_src || echo "Warning: Could not link $_src to $_dst"
+  else
+    echo "Warning: $_src is a real file! Not symlinking to $_dst"
+  fi
+}
