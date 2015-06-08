@@ -31,3 +31,6 @@
 [submodule "config/tdfischer.vim/bundle/vim-fswitch"]
 	path = config/tdfischer.vim/bundle/vim-fswitch
 	url = git://github.com/derekwyatt/vim-fswitch.git
+[submodule "config/tdfischer.vim/bundle/vim-go"]
+	path = config/tdfischer.vim/bundle/vim-go
+	url = git://github.com/fatih/vim-go.git
